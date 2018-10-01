@@ -3,4 +3,11 @@
     <color name="colorPrimary">#3F51B5</color>
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF4081</color>
+    <color name="skR_background">#FFFF0000</color>
+    <color name="skR_tint">#FD4343</color>
+    <color name="skG_background">#FF00FF00</color>
+    <color name="skG_tint">#0BDC01</color>
+    <color name="skB_background">#FF0000FF</color>
+    <color name="skB_tint">#43B9FD</color>
+    <color name="white">#FFFFFF</color>
 </resources>

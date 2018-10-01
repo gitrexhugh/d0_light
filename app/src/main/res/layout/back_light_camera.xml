@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/background_dark">
+
+    <ImageView
+        android:id="@+id/btn_back_light"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginStart="5dp"
+        android:layout_marginTop="5dp"
+        android:background="@android:color/transparent"
+        android:contentDescription="@string/btn_back_light_ds"
+        android:src="@mipmap/backlight0_xxxhdpi" />
+
+    <ImageView
+        android:id="@+id/btn_back_light_camera"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@+id/btn_back_light"
+        android:layout_toRightOf="@id/btn_back_light"
+        android:layout_marginLeft="30dp"
+        android:background="@android:color/transparent"
+        android:contentDescription="@string/btn_back_light_ds"
+        android:src="@mipmap/backlight_camera1_xxxhdpi" />
+
+    <ImageView
+        android:id="@+id/btn_screen_light_camera"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@+id/btn_back_light"
+        android:layout_toRightOf="@id/btn_back_light_camera"
+        android:layout_marginLeft="30dp"
+        android:background="@android:color/transparent"
+        android:contentDescription="@string/btn_back_light_ds"
+        android:src="@mipmap/screenlight_camera0_xxxhdpi" />
+
+    <ImageView
+        android:id="@+id/btn_screen_light"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@+id/btn_back_light"
+        android:layout_toRightOf="@id/btn_screen_light_camera"
+        android:layout_marginLeft="30dp"
+        android:background="@android:color/transparent"
+        android:contentDescription="@string/btn_back_light_ds"
+        android:src="@mipmap/screenlight0_xxxhdpi" />
+
+
+    <TextView
+        android:id="@+id/show_status"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="20sp"
+        android:layout_below="@id/btn_power"
+        android:layout_marginTop="20dp"
+        android:textColor="@color/colorAccent"/>
+
+    <TextureView android:id="@+id/preview"
+        android:visibility="visible"
+        android:layout_width="320dp"
+        android:layout_height="320dp"
+        android:layout_centerInParent="true"
+        android:layout_alignParentStart="true"/>
+
+    <Button
+        android:id="@+id/shoot"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentStart="true"
+        android:layout_marginBottom="10dp"
+        android:text="@string/shoot" />
+
+</RelativeLayout>
