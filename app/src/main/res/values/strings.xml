@@ -1,0 +1,15 @@
+<resources>
+    <string name="app_name">d0_light_01</string>
+    <string name="btn_back_light_ds">Back Light</string>
+    <string name="btn_back_light_camera_ds">Back Camera Shooting</string>
+    <string name="btn_screen_light_ds">Screen Light</string>
+    <string name="btn_screen_light_camera_ds">Front Camera Shooting</string>
+    <string name="btn_power_ds">Power</string>
+    <string name="btn_constant_ds">Constant Light</string>
+    <string name="btn_flash_ds">Flash Light</string>
+    <string name="str_red">Red</string>
+    <string name="str_green">Green</string>
+    <string name="str_blue">Blue</string>
+    <string name="shoot">Take a Picture</string>
+
+</resources>
