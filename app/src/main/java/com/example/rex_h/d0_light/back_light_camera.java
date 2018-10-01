@@ -1,6 +1,7 @@
 package com.example.rex_h.d0_light;
 
 import android.Manifest;
+import android.app.Activity;
 import android.content.pm.PackageManager;
 import android.graphics.ImageFormat;
 import android.graphics.SurfaceTexture;
@@ -30,6 +31,7 @@ import android.view.Surface;
 import android.view.SurfaceHolder;
 import android.view.TextureView;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -46,6 +48,7 @@ import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import android.provider.Settings;
 
 public class back_light_camera extends AppCompatActivity {
     private int light_state; //0:light_off; 1: light_on
@@ -93,7 +96,6 @@ public class back_light_camera extends AppCompatActivity {
     private void load_back_light_camera(){
         setContentView(R.layout.back_light_camera);
         image_menu();//執行選單宣告
-//        lightOn();
         mCameraManager = (CameraManager) this.getSystemService(Context.CAMERA_SERVICE);
         mTextureView = (TextureView) findViewById(R.id.preview);
         assert mTextureView != null;
@@ -107,9 +109,11 @@ public class back_light_camera extends AppCompatActivity {
             }
         });
     }
+
     TextureView.SurfaceTextureListener textureListener = new TextureView.SurfaceTextureListener() {
         @Override
         public void onSurfaceTextureAvailable(SurfaceTexture surface, int width, int height) {
+           //lightOn();
             openCamera();
         }
 
@@ -136,6 +140,11 @@ public class back_light_camera extends AppCompatActivity {
             mCameraDevice = camera;
             createCameraPreview();
 
+        }
+        CameraManager.TorchCallback mTorchCallback;
+
+        public CameraManager.TorchCallback getmTorchCallback() {
+            return mTorchCallback;
         }
 
         @Override
@@ -299,6 +308,7 @@ public class back_light_camera extends AppCompatActivity {
 
     private void openCamera() {
         CameraManager manager = (CameraManager) getSystemService(Context.CAMERA_SERVICE);
+
         Log.e(TAG, "is camera open");
         try {
             mCameraId = manager.getCameraIdList()[0];
@@ -312,7 +322,14 @@ public class back_light_camera extends AppCompatActivity {
                 return;
             }
             manager.openCamera(mCameraId, stateCallback, null);
-            manager.setTorchMode(mCameraId,true);
+            /*CameraManager.TorchCallback mTorchCallback=new CameraManager.TorchCallback() {
+                @Override
+                public void onTorchModeUnavailable(@NonNull String cameraId) {
+                    super.onTorchModeUnavailable(cameraId);
+                }
+            };
+            manager.registerTorchCallback(mTorchCallback,mHandler);
+            manager.setTorchMode(mCameraId,true);*/
         } catch (CameraAccessException e) {
             e.printStackTrace();
         }
@@ -359,7 +376,8 @@ public class back_light_camera extends AppCompatActivity {
         Log.e(TAG, "onResume");
         startBackgroundThread();
         if (mTextureView.isAvailable()) {
-            openCamera();
+            //openCamera();
+            lightOn();
         } else {
             mTextureView.setSurfaceTextureListener(textureListener);
         }
@@ -372,7 +390,7 @@ public class back_light_camera extends AppCompatActivity {
         stopBackgroundThread();
         super.onPause();
     }
-/*
+
     private void lightOn(){
         show_status=(TextView)findViewById(R.id.show_status);
         str_status="light_On";
@@ -389,7 +407,7 @@ public class back_light_camera extends AppCompatActivity {
         }catch (CameraAccessException e){
             e.printStackTrace();
         }
-    }*/
+    }
     private void lightOff(){
         str_status="light_Off";
 

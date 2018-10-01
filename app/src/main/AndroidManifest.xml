@@ -2,7 +2,11 @@
     package="com.example.rex_h.d0_light">
     <uses-feature android:name="android.hardware.camera2.full"/>
     <uses-permission android:name="android.permission.CAMERA"/>
+    <uses-permission android:name="android.permission.FLASHLIGHT"/>
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.CHANGE_CONFIGURATION"/>
+    <uses-permission android:name="android.permission.WRITE_SETTINGS"/>
+    <uses-permission android:name="android.permission."/>
 
     <application
         android:allowBackup="true"
@@ -19,6 +23,7 @@
         </activity>
         <activity android:name=".screen_light" android:label="screen_light" />
         <activity android:name=".back_light_camera" android:label="back_light_camera" />
+        <activity android:name=".screen_light_camera" android:label="back_light_camera" />
 
     </application>
 </manifest>

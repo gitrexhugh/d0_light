@@ -1,13 +1,20 @@
 package com.example.rex_h.d0_light;
 
+import android.app.Activity;
+import android.content.ContentResolver;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
+import android.provider.Settings;
 
 public class screen_light extends AppCompatActivity{
     private int function;// 1: back_light; 2: back_light_camera; 3: screen_light_camera; 4: screen_light
@@ -38,6 +45,7 @@ public class screen_light extends AppCompatActivity{
     private void load_screen_light(){
         setContentView(R.layout.screen_light);
         image_menu();//執行選單宣告
+        setBrightness(this,255);
         //以下宣告ROG seekBar
         sk_R=(SeekBar)findViewById(R.id.seekR);
         sk_G=(SeekBar)findViewById(R.id.seekG);
@@ -51,7 +59,66 @@ public class screen_light extends AppCompatActivity{
         sk_B.setOnSeekBarChangeListener(seekbartracking);
 
     }
-
+    /**
+     * 判斷是否開啟了自動亮度調節
+     */
+   /* public static boolean isAutoBrightness(Context context) {
+        ContentResolver resolver = context.getContentResolver();
+        boolean automicBrightness = false;
+        try {
+            automicBrightness = Settings.System.getInt(resolver,
+                    Settings.System.SCREEN_BRIGHTNESS_MODE) == Settings.System.SCREEN_BRIGHTNESS_MODE_AUTOMATIC;
+        } catch (Settings.SettingNotFoundException e) {
+            e.printStackTrace();
+        }
+        return automicBrightness;
+    }*/
+    /**
+     * 獲取螢幕的亮度
+     */
+    /*public static int getScreenBrightness(Context context) {
+        int nowBrightnessValue = 0;
+        ContentResolver resolver = context.getContentResolver();
+        try {
+            nowBrightnessValue = android.provider.Settings.System.getInt(resolver, Settings.System.SCREEN_BRIGHTNESS);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return nowBrightnessValue;
+    }*/
+    /**
+     * 設定當前Activity顯示時的亮度
+     * 螢幕亮度最大數值一般為255，各款手機有所不同
+     * screenBrightness 的取值範圍在[0,1]之間
+     */
+    public static void setBrightness(Activity activity, int brightness) {
+        WindowManager.LayoutParams lp = activity.getWindow().getAttributes();
+        lp.screenBrightness = Float.valueOf(brightness) * (1f / 255f);
+        activity.getWindow().setAttributes(lp);
+    }
+    /**
+     * 開啟關閉自動亮度調節
+     */
+    public static boolean autoBrightness(Context activity, boolean flag) {
+        int value = 0;
+        if (flag) {
+            value = Settings.System.SCREEN_BRIGHTNESS_MODE_AUTOMATIC; //開啟
+        } else {
+            value = Settings.System.SCREEN_BRIGHTNESS_MODE_MANUAL;//關閉
+        }
+        return Settings.System.putInt(activity.getContentResolver(),
+                Settings.System.SCREEN_BRIGHTNESS_MODE,
+                value);
+    }
+    /**
+     * 儲存亮度設定狀態，退出app也能保持設定狀態
+     */
+    public static void saveBrightness(Context context, int brightness) {
+        ContentResolver resolver = context.getContentResolver();
+        Uri uri = android.provider.Settings.System.getUriFor(Settings.System.SCREEN_BRIGHTNESS);
+        android.provider.Settings.System.putInt(resolver, Settings.System.SCREEN_BRIGHTNESS, brightness);
+        resolver.notifyChange(uri, null);
+    }
 
     //Screen Light RGB seekbar
     private SeekBar.OnSeekBarChangeListener seekbartracking=new SeekBar.OnSeekBarChangeListener(){
@@ -117,10 +184,9 @@ public class screen_light extends AppCompatActivity{
     private View.OnClickListener ibtn_screen_light_camera_Click= new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-           /* lightOff();
             Intent intent=new Intent();
-            intent.setClass(main_activity.this,screen_light_camera.class);
-            startActivity(intent);*/
+            intent.setClass(screen_light.this,screen_light_camera.class);
+            startActivity(intent);
 
         }
     };

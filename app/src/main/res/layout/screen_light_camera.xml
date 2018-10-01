@@ -59,75 +59,20 @@
         android:contentDescription="@string/btn_back_light_ds"
         android:src="@mipmap/screenlight0_xxxhdpi" />
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="15dp"
-        android:text="@string/str_red"
-        android:textSize="20sp"
-        android:textColor="@color/skR_tint"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentStart="true"
-        android:layout_marginBottom="135dp"/>
+       <TextureView android:id="@+id/preview"
+        android:visibility="visible"
+        android:layout_width="320dp"
+        android:layout_height="320dp"
+        android:layout_centerInParent="true"
+        android:layout_alignParentStart="true"/>
 
-    <SeekBar
-        android:id="@+id/seekR"
+    <Button
+        android:id="@+id/shoot"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="5dp"
-        android:layout_marginRight="5dp"
         android:layout_alignParentBottom="true"
         android:layout_alignParentStart="true"
-        android:layout_marginBottom="110dp"
-        android:max="255"
-        android:progress="255"
-        android:progressTint="@color/skR_background"
-        android:thumbTint="@color/skR_tint"/>
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="15dp"
-        android:textSize="20sp"
-        android:textColor="@color/skG_tint"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentStart="true"
-        android:layout_marginBottom="85dp"
-        android:text="@string/str_green"/>
-    <SeekBar
-        android:id="@+id/seekG"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="5dp"
-        android:layout_marginRight="5dp"
-        android:max="255"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentStart="true"
-        android:layout_marginBottom="65dp"
-        android:progress="255"
-        android:progressTint="@color/skG_background"
-        android:thumbTint="@color/skG_tint"/>
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="15dp"
-        android:textSize="20sp"
-        android:textColor="@color/skB_tint"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentStart="true"
-        android:layout_marginBottom="40dp"
-        android:text="@string/str_blue"/>
-    <SeekBar
-        android:id="@+id/seekB"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="5dp"
-        android:layout_marginRight="5dp"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentStart="true"
-        android:layout_marginBottom="20dp"
-        android:max="255"
-        android:progress="255"
-        android:progressTint="@color/skB_background"
-        android:thumbTint="@color/skB_tint"/>
+        android:layout_marginBottom="10dp"
+        android:text="@string/shoot" />
 
 </RelativeLayout>
