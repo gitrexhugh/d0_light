@@ -4,6 +4,9 @@
     <foreground>
         <inset
         android:drawable="@drawable/lanucher_fg"
-            android:inset="65%"/>
+            android:insetTop="29%"
+            android:insetLeft="34%"
+            android:insetBottom="29%"
+            android:insetRight="34%"/>
     </foreground>
 </adaptive-icon>

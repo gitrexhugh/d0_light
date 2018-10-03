@@ -12,6 +12,8 @@ import android.hardware.camera2.CameraMetadata;
 import android.hardware.camera2.CaptureRequest;
 import android.hardware.camera2.TotalCaptureResult;
 import android.hardware.camera2.params.StreamConfigurationMap;
+import android.hardware.camera2.CameraManager;
+import android.hardware.camera2.CameraAccessException;
 import android.media.Image;
 import android.media.ImageReader;
 import android.os.Environment;
@@ -21,7 +23,6 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.content.Context;
-import android.hardware.camera2.CameraManager;
 import android.hardware.camera2.CameraAccessException;
 import android.os.Bundle;
 import android.util.Log;
@@ -47,8 +48,10 @@ import java.io.OutputStream;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 import android.provider.Settings;
+import java.text.SimpleDateFormat;
 
 public class back_light_camera extends AppCompatActivity {
     private int light_state; //0:light_off; 1: light_on
@@ -79,6 +82,7 @@ public class back_light_camera extends AppCompatActivity {
     private static final int REQUEST_CAMERA_PERMISSION = 200;
     private boolean mFlashSuppoerted;
     private static final String TAG = "Camera2API";
+    private CameraManager.TorchCallback Torchcall;
     /*private static final SparseIntArray ORIENTATIONS = new SparseIntArray();
     static {
         ORIENTATIONS.append(Surface.ROTATION_0, 90);
@@ -97,6 +101,7 @@ public class back_light_camera extends AppCompatActivity {
         setContentView(R.layout.back_light_camera);
         image_menu();//執行選單宣告
         mCameraManager = (CameraManager) this.getSystemService(Context.CAMERA_SERVICE);
+
         mTextureView = (TextureView) findViewById(R.id.preview);
         assert mTextureView != null;
         mTextureView.setSurfaceTextureListener(textureListener);
@@ -108,13 +113,15 @@ public class back_light_camera extends AppCompatActivity {
                 takePicture();
             }
         });
+
+
     }
 
     TextureView.SurfaceTextureListener textureListener = new TextureView.SurfaceTextureListener() {
         @Override
         public void onSurfaceTextureAvailable(SurfaceTexture surface, int width, int height) {
            //lightOn();
-            openCamera();
+           openCamera();
         }
 
         @Override
@@ -141,11 +148,7 @@ public class back_light_camera extends AppCompatActivity {
             createCameraPreview();
 
         }
-        CameraManager.TorchCallback mTorchCallback;
 
-        public CameraManager.TorchCallback getmTorchCallback() {
-            return mTorchCallback;
-        }
 
         @Override
         public void onDisconnected(@NonNull CameraDevice camera) {
@@ -186,20 +189,26 @@ public class back_light_camera extends AppCompatActivity {
     }
 
     protected void takePicture() {
+        SimpleDateFormat timeStamp=new SimpleDateFormat("yyyyMMdd-hhmmss");
+        Date cur=new Date(System.currentTimeMillis());
+        String file_time=timeStamp.format(cur);
+        file_time=file_time+".jpg";
         if (null == mCameraDevice) {
             Log.e(TAG, "Camera Device is Null");
             return;
         }
 
-        CameraManager manager = (CameraManager) getSystemService(Context.CAMERA_SERVICE);
         try {
-            CameraCharacteristics characteristics = manager.getCameraCharacteristics(mCameraDevice.getId());
+            CameraCharacteristics characteristics = mCameraManager.getCameraCharacteristics(mCameraDevice.getId());
+            int width = 1920;
+            int height = 1080;
+
             Size[] jpegSizes = null;
             if (characteristics != null) {
-                jpegSizes = characteristics.get(CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP).getOutputSizes(ImageFormat.JPEG);
+                //jpegSizes = characteristics.get(CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP).getOutputSizes(ImageFormat.JPEG);
+                jpegSizes = characteristics.get(CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP).getHighResolutionOutputSizes(ImageFormat.JPEG);
             }
-            int width = 640;
-            int height = 480;
+
             if (jpegSizes != null && 0 < jpegSizes.length) {
                 width = jpegSizes[0].getWidth();
                 height = jpegSizes[0].getHeight();
@@ -214,7 +223,9 @@ public class back_light_camera extends AppCompatActivity {
             // Orientation
             //int rotation = getWindowManager().getDefaultDisplay().getRotation();
             //captureBuilder.set(CaptureRequest.JPEG_ORIENTATION, ORIENTATIONS.get(rotation));
-            final File file = new File(Environment.getExternalStorageDirectory() + "/pic.jpg");
+           // final File file = new File(Environment.getExternalStorageDirectory() + "/pic.jpg");
+            File path=Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
+            final File file = new File(path,  file_time);
             ImageReader.OnImageAvailableListener readerListener = new ImageReader.OnImageAvailableListener() {
                 @Override
                 public void onImageAvailable(ImageReader reader) {
@@ -307,12 +318,13 @@ public class back_light_camera extends AppCompatActivity {
     }
 
     private void openCamera() {
-        CameraManager manager = (CameraManager) getSystemService(Context.CAMERA_SERVICE);
 
         Log.e(TAG, "is camera open");
+       // mCameraManager= (CameraManager)getSystemService(Context.CAMERA_SERVICE);
+
         try {
-            mCameraId = manager.getCameraIdList()[0];
-            CameraCharacteristics characteristics = manager.getCameraCharacteristics(mCameraId);
+            final String mCameraId=mCameraManager.getCameraIdList()[0];
+            CameraCharacteristics characteristics = mCameraManager.getCameraCharacteristics(mCameraId);
             StreamConfigurationMap map = characteristics.get(CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP);
             assert map != null;
             imageDimension = map.getOutputSizes(SurfaceTexture.class)[0];
@@ -321,7 +333,18 @@ public class back_light_camera extends AppCompatActivity {
                 ActivityCompat.requestPermissions(back_light_camera.this, new String[]{Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE}, REQUEST_CAMERA_PERMISSION);
                 return;
             }
-            manager.openCamera(mCameraId, stateCallback, null);
+
+            mCameraManager.openCamera(mCameraId, stateCallback, new Handler());
+            mCameraManager.registerTorchCallback(new CameraManager.TorchCallback() {
+                @Override
+                public void onTorchModeChanged(@NonNull String cameraId, boolean enabled) {
+                    super.onTorchModeChanged(cameraId, enabled);
+                    // mCameraId=cameraId;
+                }
+            }, new Handler());
+
+            mCameraManager.setTorchMode(mCameraId,true);
+            //mCameraManager.setTorchMode(mCameraId,true);
             /*CameraManager.TorchCallback mTorchCallback=new CameraManager.TorchCallback() {
                 @Override
                 public void onTorchModeUnavailable(@NonNull String cameraId) {
@@ -377,7 +400,6 @@ public class back_light_camera extends AppCompatActivity {
         startBackgroundThread();
         if (mTextureView.isAvailable()) {
             //openCamera();
-            lightOn();
         } else {
             mTextureView.setSurfaceTextureListener(textureListener);
         }
@@ -400,10 +422,10 @@ public class back_light_camera extends AppCompatActivity {
         // anim_control(light_state);
 
         //以下為Camera Manager相關，不適用模擬器
-        CameraManager manager = (CameraManager)getSystemService(Context.CAMERA_SERVICE);
+        CameraManager mCamera = (CameraManager)getSystemService(Context.CAMERA_SERVICE);
         try{
-            String cameraID=manager.getCameraIdList()[0];
-            manager.setTorchMode(cameraID,true);
+            String cameraID=mCamera.getCameraIdList()[0];
+            mCamera.setTorchMode(cameraID,true);
         }catch (CameraAccessException e){
             e.printStackTrace();
         }
@@ -412,7 +434,7 @@ public class back_light_camera extends AppCompatActivity {
         str_status="light_Off";
 
         //以下為Camera Manager相關，不適用模擬器
-        CameraManager mCameraManager = (CameraManager)getSystemService(Context.CAMERA_SERVICE);
+        //CameraManager mCameraManager = (CameraManager)getSystemService(Context.CAMERA_SERVICE);
         try{
             String cameraID=mCameraManager.getCameraIdList()[0];
             mCameraManager.setTorchMode(cameraID,false);
@@ -475,16 +497,4 @@ public class back_light_camera extends AppCompatActivity {
         }
     };
 
-    /*private View.OnClickListener ibtn_power_click=new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            if (light_state==1){
-                light_state=4;
-                lightOff();
-            }else {
-                light_state=1;
-                lightOn();
-            }
-        }
-    };*/
 }
