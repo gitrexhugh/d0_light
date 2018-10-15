@@ -37,9 +37,7 @@ import android.view.SurfaceHolder;
 import android.view.TextureView;
 import android.view.View;
 import android.view.WindowManager;
-import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -63,7 +61,7 @@ public class screen_light_camera extends AppCompatActivity {
     private ImageView ibtn_screen_light_camera;
     private ImageView ibtn_back_light;
     private ImageView ibtn_back_light_camera;
-    private ImageView ibtn_power;
+    private ImageView btn_shot;
     private TextView show_status;
     private String str_status;
     TextView show_text;
@@ -73,7 +71,6 @@ public class screen_light_camera extends AppCompatActivity {
     int sk_id;
     //以下為照相機功能宣告
     private TextureView mTextureView;
-    private Button btn_shot;
     private SurfaceHolder mSurfaceHolder;
     private CameraManager mCameraManager;
     private Handler mHandler;
@@ -110,15 +107,14 @@ public class screen_light_camera extends AppCompatActivity {
         setBrightness(this,255);
         //以下宣告RGB seekBar
         show_text=(TextView)findViewById(R.id.show_color);
-        //screen_bg.setBackgroundColor(Color.argb(255,cR,cG,cB));
         show_text.setBackgroundColor(Color.argb(255,cR,cG,cB));
-        show_text.setText("status:"+light_state+";"+String.format("%02x", cR)+String.format("%02x", cG)+String.format("%02x", cB));
+        //show_text.setText("status:"+light_state+";"+String.format("%02x", cR)+String.format("%02x", cG)+String.format("%02x", cB));
         mCameraManager = (CameraManager) this.getSystemService(Context.CAMERA_SERVICE);
         mTextureView = (TextureView) findViewById(R.id.preview);
         assert mTextureView != null;
         mTextureView.setSurfaceTextureListener(textureListener);
-        btn_shot = (Button) findViewById(R.id.shoot);
-        assert btn_shot != null;
+        btn_shot = (ImageView) findViewById(R.id.ibtn_shoot);
+        //assert btn_shot != null;
         btn_shot.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -162,11 +158,6 @@ public class screen_light_camera extends AppCompatActivity {
             createCameraPreview();
 
         }
-        CameraManager.TorchCallback mTorchCallback;
-
-        public CameraManager.TorchCallback getmTorchCallback() {
-            return mTorchCallback;
-        }
 
         @Override
         public void onDisconnected(@NonNull CameraDevice camera) {
@@ -177,15 +168,6 @@ public class screen_light_camera extends AppCompatActivity {
         public void onError(@NonNull CameraDevice camera, int error) {
             mCameraDevice.close();
             mCameraDevice = null;
-        }
-    };
-
-    final CameraCaptureSession.CaptureCallback captureCallbackListener = new CameraCaptureSession.CaptureCallback() {
-        @Override
-        public void onCaptureCompleted(@NonNull CameraCaptureSession session, @NonNull CaptureRequest request, @NonNull TotalCaptureResult result) {
-            super.onCaptureCompleted(session, request, result);
-            Toast.makeText(screen_light_camera.this, "Saved" + file, Toast.LENGTH_SHORT).show();
-            createCameraPreview();
         }
     };
 
@@ -287,7 +269,7 @@ public class screen_light_camera extends AppCompatActivity {
                 @Override
                 public void onCaptureCompleted(CameraCaptureSession session, CaptureRequest request, TotalCaptureResult result) {
                     super.onCaptureCompleted(session, request, result);
-                    Toast.makeText(screen_light_camera.this, "Saved:" + file, Toast.LENGTH_SHORT).show();
+                    Toast.makeText(screen_light_camera.this, "Saved in:" + file.getPath(), Toast.LENGTH_SHORT).show();
                     createCameraPreview();
                 }
             };

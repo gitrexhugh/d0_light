@@ -1,12 +1,9 @@
 package com.example.rex_h.d0_light;
 
 import android.Manifest;
-import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.pm.PackageManager;
-import android.hardware.Camera;
 import android.graphics.ImageFormat;
 import android.graphics.SurfaceTexture;
 import android.hardware.camera2.CameraCaptureSession;
@@ -18,7 +15,6 @@ import android.hardware.camera2.TotalCaptureResult;
 import android.hardware.camera2.params.StreamConfigurationMap;
 import android.hardware.camera2.CameraManager;
 import android.hardware.camera2.CameraAccessException;
-import android.hardware.camera2.CameraMetadata;
 import android.media.Image;
 import android.media.ImageReader;
 import android.os.Environment;
@@ -28,7 +24,6 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.content.Context;
-import android.hardware.camera2.CameraAccessException;
 import android.os.Bundle;
 import android.util.Log;
 import android.util.Size;
@@ -38,11 +33,7 @@ import android.view.Surface;
 import android.view.SurfaceHolder;
 import android.view.TextureView;
 import android.view.View;
-import android.view.WindowManager;
-import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.TextView;
-import android.support.v7.app.AppCompatActivity;
 import android.content.Intent;
 import android.widget.Toast;
 
@@ -56,7 +47,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
-import android.provider.Settings;
 import java.text.SimpleDateFormat;
 
 public class back_light_camera extends AppCompatActivity {
@@ -66,12 +56,11 @@ public class back_light_camera extends AppCompatActivity {
     private ImageView ibtn_screen_light_camera;
     private ImageView ibtn_back_light;
     private ImageView ibtn_back_light_camera;
-    private ImageView ibtn_power;
-    private TextView show_status;
+    private ImageView btn_shot;
+    //private TextView show_status;
     private String str_status;
     //以下為照相機功能宣告
     private TextureView mTextureView;
-    private Button btn_shot;
     private SurfaceHolder mSurfaceHolder;
     private CameraManager mCameraManager;
     private Handler mHandler;
@@ -111,8 +100,8 @@ public class back_light_camera extends AppCompatActivity {
         mTextureView = (TextureView) findViewById(R.id.preview);
         assert mTextureView != null;
         mTextureView.setSurfaceTextureListener(textureListener);
-        btn_shot = (Button) findViewById(R.id.shoot);
-        assert btn_shot != null;
+        btn_shot = (ImageView) findViewById(R.id.ibtn_shoot);
+        //assert btn_shot != null;
 
         btn_shot.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -169,14 +158,6 @@ public class back_light_camera extends AppCompatActivity {
         }
     };
 
-    final CameraCaptureSession.CaptureCallback captureCallbackListener = new CameraCaptureSession.CaptureCallback() {
-        @Override
-        public void onCaptureCompleted(@NonNull CameraCaptureSession session, @NonNull CaptureRequest request, @NonNull TotalCaptureResult result) {
-            super.onCaptureCompleted(session, request, result);
-            Toast.makeText(back_light_camera.this, "Saved" + file, Toast.LENGTH_SHORT).show();
-            createCameraPreview();
-        }
-    };
 
     protected void startBackgroundThread() {
         mBackgroundThread = new HandlerThread("Camera Background");
@@ -232,12 +213,6 @@ public class back_light_camera extends AppCompatActivity {
             captureBuilder.set(CaptureRequest.CONTROL_MODE, CameraMetadata.CONTROL_MODE_AUTO);
             captureBuilder.set(CaptureRequest.FLASH_MODE,CameraMetadata.FLASH_MODE_TORCH);
 
-
-//            captureRequestBuilder = mCameraDevice.createCaptureRequest(CameraDevice.TEMPLATE_PREVIEW);
-            //captureRequestBuilder.addTarget(reader.getSurface());
-//            captureRequestBuilder.set(CaptureRequest.CONTROL_MODE, CameraMetadata.CONTROL_MODE_AUTO);
-
-
             //照片Orientation
             int rotation = getWindowManager().getDefaultDisplay().getRotation();
             captureBuilder.set(CaptureRequest.JPEG_ORIENTATION, ORIENTATIONS.get(rotation));
@@ -283,7 +258,7 @@ public class back_light_camera extends AppCompatActivity {
                 @Override
                 public void onCaptureCompleted(CameraCaptureSession session, CaptureRequest request, TotalCaptureResult result) {
                     super.onCaptureCompleted(session, request, result);
-                    Toast.makeText(back_light_camera.this, "Saved:" + file, Toast.LENGTH_SHORT).show();
+                    Toast.makeText(back_light_camera.this, "Saved:" + file.getPath(), Toast.LENGTH_SHORT).show();
                     createCameraPreview();
                 }
             };
@@ -292,7 +267,6 @@ public class back_light_camera extends AppCompatActivity {
                 public void onConfigured(CameraCaptureSession session) {
                     try {
                         session.capture(captureBuilder.build(), captureListener, mBackgroundHandler);
-                        //session.capture(captureRequestBuilder.build(), captureListener, mBackgroundHandler);
                     } catch (CameraAccessException e) {
                         e.printStackTrace();
                     }
@@ -319,10 +293,6 @@ public class back_light_camera extends AppCompatActivity {
             captureBuilder.set(CaptureRequest.CONTROL_MODE, CameraMetadata.CONTROL_MODE_AUTO);
             captureBuilder.set(CaptureRequest.FLASH_MODE,CameraMetadata.FLASH_MODE_TORCH);
 
-/*            captureRequestBuilder = mCameraDevice.createCaptureRequest(CameraDevice.TEMPLATE_PREVIEW);
-            captureRequestBuilder.set(CaptureRequest.FLASH_MODE,CameraMetadata.FLASH_MODE_TORCH);
-            captureRequestBuilder.addTarget(surface);
-*/
             mCameraDevice.createCaptureSession(Arrays.asList(surface), new CameraCaptureSession.StateCallback() {
                 @Override
                 public void onConfigured(@NonNull CameraCaptureSession cameraCaptureSession) {

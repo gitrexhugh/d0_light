@@ -17,7 +17,7 @@ import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
-import android.provider.Settings;
+
 
 public class screen_light extends AppCompatActivity{
     private int function;// 1: back_light; 2: back_light_camera; 3: screen_light_camera; 4: screen_light
@@ -54,9 +54,8 @@ public class screen_light extends AppCompatActivity{
         sk_G=(SeekBar)findViewById(R.id.seekG);
         sk_B=(SeekBar)findViewById(R.id.seekB);
         show_text=(TextView)findViewById(R.id.show_color);
-        //screen_bg.setBackgroundColor(Color.argb(255,cR,cG,cB));
         show_text.setBackgroundColor(Color.argb(255,cR,cG,cB));
-        show_text.setText("status:"+light_state+";"+String.format("%02x", cR)+String.format("%02x", cG)+String.format("%02x", cB));
+        //show_text.setText("status:"+light_state+";"+String.format("%02x", cR)+String.format("%02x", cG)+String.format("%02x", cB));
         sk_R.setOnSeekBarChangeListener(seekbartracking);
         sk_G.setOnSeekBarChangeListener(seekbartracking);
         sk_B.setOnSeekBarChangeListener(seekbartracking);

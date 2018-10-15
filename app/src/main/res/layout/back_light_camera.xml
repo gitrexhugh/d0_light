@@ -68,13 +68,15 @@
 
 
 
-    <Button
-        android:id="@+id/shoot"
-        android:layout_width="match_parent"
+    <ImageView
+        android:id="@+id/ibtn_shoot"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
         android:layout_alignParentBottom="true"
-        android:layout_alignParentStart="true"
         android:layout_marginBottom="10dp"
-        android:text="@string/shoot" />
+        android:background="@android:color/transparent"
+        android:contentDescription="@string/btn_back_light_ds"
+        android:src="@mipmap/shot" />
 
 </RelativeLayout>
