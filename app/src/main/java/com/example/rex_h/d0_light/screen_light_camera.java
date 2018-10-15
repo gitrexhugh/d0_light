@@ -2,7 +2,9 @@ package com.example.rex_h.d0_light;
 
 import android.Manifest;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
@@ -28,6 +30,8 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.util.Size;
+import android.util.SparseIntArray;
+import android.view.KeyEvent;
 import android.view.Surface;
 import android.view.SurfaceHolder;
 import android.view.TextureView;
@@ -45,8 +49,10 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.ByteBuffer;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 
 public class screen_light_camera extends AppCompatActivity {
@@ -84,6 +90,13 @@ public class screen_light_camera extends AppCompatActivity {
     private static final int REQUEST_CAMERA_PERMISSION = 200;
     private boolean mFlashSuppoerted;
     private static final String TAG = "Camera2API";
+    private static final SparseIntArray ORIENTATIONS = new SparseIntArray();
+    static {
+        ORIENTATIONS.append(Surface.ROTATION_0,270);
+        ORIENTATIONS.append(Surface.ROTATION_90, 0);
+        ORIENTATIONS.append(Surface.ROTATION_180, 90);
+        ORIENTATIONS.append(Surface.ROTATION_270, 180);
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -95,7 +108,7 @@ public class screen_light_camera extends AppCompatActivity {
         setContentView(R.layout.screen_light_camera);
         image_menu();//執行選單宣告
         setBrightness(this,255);
-        //以下宣告ROG seekBar
+        //以下宣告RGB seekBar
         show_text=(TextView)findViewById(R.id.show_color);
         //screen_bg.setBackgroundColor(Color.argb(255,cR,cG,cB));
         show_text.setBackgroundColor(Color.argb(255,cR,cG,cB));
@@ -194,23 +207,33 @@ public class screen_light_camera extends AppCompatActivity {
     }
 
     protected void takePicture() {
+        SimpleDateFormat timeStamp=new SimpleDateFormat("yyyyMMdd-hhmmss");
+        Date cur=new Date(System.currentTimeMillis());
+        String file_time=timeStamp.format(cur);
+        file_time=file_time+".jpg";
+
         if (null == mCameraDevice) {
             Log.e(TAG, "Camera Device is Null");
             return;
         }
 
-        CameraManager manager = (CameraManager) getSystemService(Context.CAMERA_SERVICE);
         try {
-            CameraCharacteristics characteristics = manager.getCameraCharacteristics(mCameraDevice.getId());
-            Size[] jpegSizes = null;
+            CameraCharacteristics characteristics = mCameraManager.getCameraCharacteristics(mCameraDevice.getId());
+            int width=900;
+            int height=1600;
+
+            //Size[] jpegSizes = null;
             if (characteristics != null) {
-                jpegSizes = characteristics.get(CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP).getOutputSizes(ImageFormat.JPEG);
-            }
-            int width = 640;
-            int height = 480;
-            if (jpegSizes != null && 0 < jpegSizes.length) {
-                width = jpegSizes[0].getWidth();
-                height = jpegSizes[0].getHeight();
+                //jpegSizes = characteristics.get(CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP).getOutputSizes(ImageFormat.JPEG);
+                Size[] jpegSizes = characteristics.get(CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP).getHighResolutionOutputSizes(ImageFormat.JPEG);// 取得高解析度輸出尺寸
+                if (jpegSizes != null && 0 < jpegSizes.length) {
+                    width = jpegSizes[0].getWidth();
+                    height = jpegSizes[0].getHeight();
+                }else{
+                    width=900;
+                    height=1600;
+                }
+
             }
             ImageReader reader = ImageReader.newInstance(width, height, ImageFormat.JPEG, 1);
             List<Surface> outputSurfaces = new ArrayList<Surface>(2);
@@ -219,10 +242,13 @@ public class screen_light_camera extends AppCompatActivity {
             final CaptureRequest.Builder captureBuilder = mCameraDevice.createCaptureRequest(CameraDevice.TEMPLATE_STILL_CAPTURE);
             captureBuilder.addTarget(reader.getSurface());
             captureBuilder.set(CaptureRequest.CONTROL_MODE, CameraMetadata.CONTROL_MODE_AUTO);
-            // Orientation
-            //int rotation = getWindowManager().getDefaultDisplay().getRotation();
-            //captureBuilder.set(CaptureRequest.JPEG_ORIENTATION, ORIENTATIONS.get(rotation));
-            final File file = new File(Environment.getExternalStorageDirectory() + "/pic.jpg");
+            // 照片Orientation
+            int rotation = getWindowManager().getDefaultDisplay().getRotation();
+            captureBuilder.set(CaptureRequest.JPEG_ORIENTATION, ORIENTATIONS.get(rotation));
+            //設定存放路徑
+            File path=Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
+            final File file = new File(path,  file_time);
+
             ImageReader.OnImageAvailableListener readerListener = new ImageReader.OnImageAvailableListener() {
                 @Override
                 public void onImageAvailable(ImageReader reader) {
@@ -419,6 +445,7 @@ public class screen_light_camera extends AppCompatActivity {
             Intent intent=new Intent();
             intent.setClass(screen_light_camera.this,screen_light.class);
             startActivity(intent);
+            finish();
         }
     };
 
@@ -439,6 +466,7 @@ public class screen_light_camera extends AppCompatActivity {
             Intent intent=new Intent();
             intent.setClass(screen_light_camera.this,main_activity.class);
             startActivity(intent);
+            finish();
 
         }
     };
@@ -448,7 +476,33 @@ public class screen_light_camera extends AppCompatActivity {
             Intent intent=new Intent();
             intent.setClass(screen_light_camera.this,back_light_camera.class);
             startActivity(intent);
+            finish();
 
         }
     };
+
+    // 關閉程式方法
+    public boolean onKeyDown (int keyCode, KeyEvent event){
+        if (keyCode== KeyEvent.KEYCODE_BACK){
+            AlertDialog isExit=new AlertDialog.Builder(this)
+                    .setTitle(R.string.is_exit_title)
+                    .setMessage(R.string.is_exit_msg)
+                    .setPositiveButton(R.string.is_exit_yes, new DialogInterface.OnClickListener() {
+
+                        public void onClick(DialogInterface dialog, int which) {
+                            System.exit(0);
+                        }
+                    })
+                    .setNegativeButton(R.string.is_exit_no, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.cancel();
+                        }
+                    })
+                    .setCancelable(false)
+                    .show();
+
+        }
+        return false;
+    }
 }

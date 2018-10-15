@@ -11,5 +11,9 @@
     <string name="str_green">Green</string>
     <string name="str_blue">Blue</string>
     <string name="shoot">Take a Picture</string>
+    <string name="is_exit_title">Exit this APP?</string>
+    <string name="is_exit_msg">Click "Exit" to Close APP /n or Click "No" back to use</string>
+    <string name="is_exit_yes">Exit</string>
+    <string name="is_exit_no">No</string>
 
 </resources>

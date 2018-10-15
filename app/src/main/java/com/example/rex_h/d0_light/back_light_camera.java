@@ -2,7 +2,11 @@ package com.example.rex_h.d0_light;
 
 import android.Manifest;
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.content.DialogInterface;
 import android.content.pm.PackageManager;
+import android.hardware.Camera;
 import android.graphics.ImageFormat;
 import android.graphics.SurfaceTexture;
 import android.hardware.camera2.CameraCaptureSession;
@@ -14,6 +18,7 @@ import android.hardware.camera2.TotalCaptureResult;
 import android.hardware.camera2.params.StreamConfigurationMap;
 import android.hardware.camera2.CameraManager;
 import android.hardware.camera2.CameraAccessException;
+import android.hardware.camera2.CameraMetadata;
 import android.media.Image;
 import android.media.ImageReader;
 import android.os.Environment;
@@ -28,6 +33,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.util.Size;
 import android.util.SparseIntArray;
+import android.view.KeyEvent;
 import android.view.Surface;
 import android.view.SurfaceHolder;
 import android.view.TextureView;
@@ -83,13 +89,13 @@ public class back_light_camera extends AppCompatActivity {
     private boolean mFlashSuppoerted;
     private static final String TAG = "Camera2API";
     private CameraManager.TorchCallback Torchcall;
-    /*private static final SparseIntArray ORIENTATIONS = new SparseIntArray();
+    private static final SparseIntArray ORIENTATIONS = new SparseIntArray();
     static {
         ORIENTATIONS.append(Surface.ROTATION_0, 90);
         ORIENTATIONS.append(Surface.ROTATION_90, 0);
         ORIENTATIONS.append(Surface.ROTATION_180, 270);
         ORIENTATIONS.append(Surface.ROTATION_270, 180);
-    }*/
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -107,13 +113,13 @@ public class back_light_camera extends AppCompatActivity {
         mTextureView.setSurfaceTextureListener(textureListener);
         btn_shot = (Button) findViewById(R.id.shoot);
         assert btn_shot != null;
+
         btn_shot.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 takePicture();
             }
         });
-
 
     }
 
@@ -122,6 +128,7 @@ public class back_light_camera extends AppCompatActivity {
         public void onSurfaceTextureAvailable(SurfaceTexture surface, int width, int height) {
            //lightOn();
            openCamera();
+
         }
 
         @Override
@@ -200,30 +207,42 @@ public class back_light_camera extends AppCompatActivity {
 
         try {
             CameraCharacteristics characteristics = mCameraManager.getCameraCharacteristics(mCameraDevice.getId());
-            int width = 1920;
-            int height = 1080;
+            int width=900;
+            int height=1600;
 
-            Size[] jpegSizes = null;
+            //Size[] jpegSizes = null;
             if (characteristics != null) {
                 //jpegSizes = characteristics.get(CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP).getOutputSizes(ImageFormat.JPEG);
-                jpegSizes = characteristics.get(CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP).getHighResolutionOutputSizes(ImageFormat.JPEG);
-            }
+                Size[] jpegSizes = characteristics.get(CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP).getHighResolutionOutputSizes(ImageFormat.JPEG);// 取得高解析度輸出尺寸
+                if (jpegSizes != null && 0 < jpegSizes.length) {
+                    width = jpegSizes[0].getWidth();
+                    height = jpegSizes[0].getHeight();
+                }else{
+                    width=900;
+                    height=1600;
+                }
 
-            if (jpegSizes != null && 0 < jpegSizes.length) {
-                width = jpegSizes[0].getWidth();
-                height = jpegSizes[0].getHeight();
             }
             ImageReader reader = ImageReader.newInstance(width, height, ImageFormat.JPEG, 1);
             List<Surface> outputSurfaces = new ArrayList<Surface>(2);
             outputSurfaces.add(reader.getSurface());
             outputSurfaces.add(new Surface(mTextureView.getSurfaceTexture()));
-            final CaptureRequest.Builder captureBuilder = mCameraDevice.createCaptureRequest(CameraDevice.TEMPLATE_STILL_CAPTURE);
+           final CaptureRequest.Builder captureBuilder = mCameraDevice.createCaptureRequest(CameraDevice.TEMPLATE_STILL_CAPTURE);
             captureBuilder.addTarget(reader.getSurface());
             captureBuilder.set(CaptureRequest.CONTROL_MODE, CameraMetadata.CONTROL_MODE_AUTO);
-            // Orientation
-            //int rotation = getWindowManager().getDefaultDisplay().getRotation();
-            //captureBuilder.set(CaptureRequest.JPEG_ORIENTATION, ORIENTATIONS.get(rotation));
-           // final File file = new File(Environment.getExternalStorageDirectory() + "/pic.jpg");
+            captureBuilder.set(CaptureRequest.FLASH_MODE,CameraMetadata.FLASH_MODE_TORCH);
+
+
+//            captureRequestBuilder = mCameraDevice.createCaptureRequest(CameraDevice.TEMPLATE_PREVIEW);
+            //captureRequestBuilder.addTarget(reader.getSurface());
+//            captureRequestBuilder.set(CaptureRequest.CONTROL_MODE, CameraMetadata.CONTROL_MODE_AUTO);
+
+
+            //照片Orientation
+            int rotation = getWindowManager().getDefaultDisplay().getRotation();
+            captureBuilder.set(CaptureRequest.JPEG_ORIENTATION, ORIENTATIONS.get(rotation));
+
+            //設定存放路徑
             File path=Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
             final File file = new File(path,  file_time);
             ImageReader.OnImageAvailableListener readerListener = new ImageReader.OnImageAvailableListener() {
@@ -273,6 +292,7 @@ public class back_light_camera extends AppCompatActivity {
                 public void onConfigured(CameraCaptureSession session) {
                     try {
                         session.capture(captureBuilder.build(), captureListener, mBackgroundHandler);
+                        //session.capture(captureRequestBuilder.build(), captureListener, mBackgroundHandler);
                     } catch (CameraAccessException e) {
                         e.printStackTrace();
                     }
@@ -293,8 +313,16 @@ public class back_light_camera extends AppCompatActivity {
             assert texture != null;
             texture.setDefaultBufferSize(imageDimension.getWidth(), imageDimension.getHeight());
             Surface surface = new Surface(texture);
-            captureRequestBuilder = mCameraDevice.createCaptureRequest(CameraDevice.TEMPLATE_PREVIEW);
+
+            final CaptureRequest.Builder captureBuilder = mCameraDevice.createCaptureRequest(CameraDevice.TEMPLATE_PREVIEW);
+            captureBuilder.addTarget(surface);
+            captureBuilder.set(CaptureRequest.CONTROL_MODE, CameraMetadata.CONTROL_MODE_AUTO);
+            captureBuilder.set(CaptureRequest.FLASH_MODE,CameraMetadata.FLASH_MODE_TORCH);
+
+/*            captureRequestBuilder = mCameraDevice.createCaptureRequest(CameraDevice.TEMPLATE_PREVIEW);
+            captureRequestBuilder.set(CaptureRequest.FLASH_MODE,CameraMetadata.FLASH_MODE_TORCH);
             captureRequestBuilder.addTarget(surface);
+*/
             mCameraDevice.createCaptureSession(Arrays.asList(surface), new CameraCaptureSession.StateCallback() {
                 @Override
                 public void onConfigured(@NonNull CameraCaptureSession cameraCaptureSession) {
@@ -304,7 +332,7 @@ public class back_light_camera extends AppCompatActivity {
                     }
                     // When the session is ready, we start displaying the preview.
                     mcameraCaptureSession = cameraCaptureSession;
-                    updatePreview();
+                    updatePreview(captureBuilder);
                 }
 
                 @Override
@@ -320,8 +348,6 @@ public class back_light_camera extends AppCompatActivity {
     private void openCamera() {
 
         Log.e(TAG, "is camera open");
-       // mCameraManager= (CameraManager)getSystemService(Context.CAMERA_SERVICE);
-
         try {
             final String mCameraId=mCameraManager.getCameraIdList()[0];
             CameraCharacteristics characteristics = mCameraManager.getCameraCharacteristics(mCameraId);
@@ -335,37 +361,22 @@ public class back_light_camera extends AppCompatActivity {
             }
 
             mCameraManager.openCamera(mCameraId, stateCallback, new Handler());
-            mCameraManager.registerTorchCallback(new CameraManager.TorchCallback() {
-                @Override
-                public void onTorchModeChanged(@NonNull String cameraId, boolean enabled) {
-                    super.onTorchModeChanged(cameraId, enabled);
-                    // mCameraId=cameraId;
-                }
-            }, new Handler());
 
-            mCameraManager.setTorchMode(mCameraId,true);
-            //mCameraManager.setTorchMode(mCameraId,true);
-            /*CameraManager.TorchCallback mTorchCallback=new CameraManager.TorchCallback() {
-                @Override
-                public void onTorchModeUnavailable(@NonNull String cameraId) {
-                    super.onTorchModeUnavailable(cameraId);
-                }
-            };
-            manager.registerTorchCallback(mTorchCallback,mHandler);
-            manager.setTorchMode(mCameraId,true);*/
         } catch (CameraAccessException e) {
             e.printStackTrace();
         }
         Log.e(TAG, "openCamera X");
     }
 
-    protected void updatePreview() {
+    protected void updatePreview(CaptureRequest.Builder captureBuilder) {
         if (null == mCameraDevice) {
             Log.e(TAG, "updatePreview error, return");
         }
-        captureRequestBuilder.set(CaptureRequest.CONTROL_MODE, CameraMetadata.CONTROL_MODE_AUTO);
+        captureBuilder.set(CaptureRequest.CONTROL_MODE, CameraMetadata.CONTROL_MODE_AUTO);
+        //captureRequestBuilder.set(CaptureRequest.CONTROL_MODE, CameraMetadata.CONTROL_MODE_AUTO);
+        //captureRequestBuilder.set(CaptureRequest.FLASH_MODE,CameraMetadata.FLASH_MODE_TORCH);
         try {
-            mcameraCaptureSession.setRepeatingRequest(captureRequestBuilder.build(), null, mBackgroundHandler);
+            mcameraCaptureSession.setRepeatingRequest(captureBuilder.build(), null, mBackgroundHandler);
         } catch (CameraAccessException e) {
             e.printStackTrace();
         }
@@ -413,23 +424,6 @@ public class back_light_camera extends AppCompatActivity {
         super.onPause();
     }
 
-    private void lightOn(){
-        show_status=(TextView)findViewById(R.id.show_status);
-        str_status="light_On";
-        show_status.setText(str_status+"|status:"+light_state);
-//        ibtn_power.setImageResource(R.mipmap.light_xxxhdpi);
-        //呼叫動畫控制程式- 暫不執行
-        // anim_control(light_state);
-
-        //以下為Camera Manager相關，不適用模擬器
-        CameraManager mCamera = (CameraManager)getSystemService(Context.CAMERA_SERVICE);
-        try{
-            String cameraID=mCamera.getCameraIdList()[0];
-            mCamera.setTorchMode(cameraID,true);
-        }catch (CameraAccessException e){
-            e.printStackTrace();
-        }
-    }
     private void lightOff(){
         str_status="light_Off";
 
@@ -464,6 +458,7 @@ public class back_light_camera extends AppCompatActivity {
             Intent intent=new Intent();
             intent.setClass(back_light_camera.this,screen_light.class);
             startActivity(intent);
+            finish();
         }
     };
 
@@ -474,6 +469,7 @@ public class back_light_camera extends AppCompatActivity {
             Intent intent=new Intent();
             intent.setClass(back_light_camera.this,screen_light_camera.class);
             startActivity(intent);
+            finish();
 
         }
     };
@@ -484,6 +480,7 @@ public class back_light_camera extends AppCompatActivity {
             Intent intent=new Intent();
             intent.setClass(back_light_camera.this,main_activity.class);
             startActivity(intent);
+            finish();
 
         }
     };
@@ -496,5 +493,30 @@ public class back_light_camera extends AppCompatActivity {
 
         }
     };
+
+    // 關閉程式方法
+    public boolean onKeyDown (int keyCode, KeyEvent event){
+        if (keyCode== KeyEvent.KEYCODE_BACK){
+            AlertDialog isExit=new AlertDialog.Builder(this)
+            .setTitle(R.string.is_exit_title)
+                    .setMessage(R.string.is_exit_msg)
+                    .setPositiveButton(R.string.is_exit_yes, new DialogInterface.OnClickListener() {
+
+                        public void onClick(DialogInterface dialog, int which) {
+                             System.exit(0);
+                            }
+                    })
+                    .setNegativeButton(R.string.is_exit_no, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.cancel();
+                        }
+                    })
+                    .setCancelable(false)
+                    .show();
+
+        }
+        return false;
+    }
 
 }

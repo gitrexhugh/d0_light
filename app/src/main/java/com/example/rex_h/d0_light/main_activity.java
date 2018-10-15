@@ -1,9 +1,12 @@
 package com.example.rex_h.d0_light;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.hardware.camera2.CameraManager;
 import android.hardware.camera2.CameraAccessException;
 import android.os.Bundle;
+import android.view.KeyEvent;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -93,6 +96,7 @@ public class main_activity extends AppCompatActivity {
             Intent intent=new Intent();
             intent.setClass(main_activity.this,screen_light.class);
             startActivity(intent);
+            finish();
         }
     };
 
@@ -103,6 +107,7 @@ public class main_activity extends AppCompatActivity {
             Intent intent=new Intent();
             intent.setClass(main_activity.this,screen_light_camera.class);
             startActivity(intent);
+            finish();
 
         }
     };
@@ -122,6 +127,7 @@ public class main_activity extends AppCompatActivity {
             Intent intent=new Intent();
             intent.setClass(main_activity.this,back_light_camera.class);
             startActivity(intent);
+            finish();
 
         }
     };
@@ -138,7 +144,30 @@ public class main_activity extends AppCompatActivity {
             }
         }
     };
+    // 關閉程式方法
+    public boolean onKeyDown (int keyCode, KeyEvent event){
+        if (keyCode== KeyEvent.KEYCODE_BACK){
+            AlertDialog isExit=new AlertDialog.Builder(this)
+                    .setTitle(R.string.is_exit_title)
+                    .setMessage(R.string.is_exit_msg)
+                    .setPositiveButton(R.string.is_exit_yes, new DialogInterface.OnClickListener() {
 
+                        public void onClick(DialogInterface dialog, int which) {
+                            System.exit(0);
+                        }
+                    })
+                    .setNegativeButton(R.string.is_exit_no, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.cancel();
+                        }
+                    })
+                    .setCancelable(false)
+                    .show();
+
+        }
+        return false;
+    }
 
 }
 
