@@ -8,9 +8,11 @@ import android.hardware.camera2.CameraAccessException;
 import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.ImageView;
 import android.support.v7.app.AppCompatActivity;
 import android.content.Intent;
+import android.widget.Toast;
 
 public class main_activity extends AppCompatActivity {
     private int function;// 1: back_light; 2: back_light_camera; 3: screen_light_camera; 4: screen_light
@@ -28,6 +30,9 @@ public class main_activity extends AppCompatActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        //隱藏狀態列
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+                WindowManager.LayoutParams.FLAG_FULLSCREEN);
         load_back_light();
     }
 
@@ -46,8 +51,7 @@ public class main_activity extends AppCompatActivity {
         //str_status="light_On";
         //show_status.setText(str_status+"|status:"+light_state);
         ibtn_power.setImageResource(R.mipmap.light_xxxhdpi);
-
-
+        light_state=1;
         //以下為Camera Manager相關，不適用模擬器
         CameraManager mCamera = (CameraManager)getSystemService(Context.CAMERA_SERVICE);
         try{
@@ -58,10 +62,8 @@ public class main_activity extends AppCompatActivity {
         }
     }
     private void lightOff(){
-        str_status="light_Off";
-
+        //str_status="light_Off";
         ibtn_power.setImageResource(R.mipmap.light_xxxhdpi_0);
-
         //以下為Camera Manager相關，不適用模擬器
         CameraManager mCamera = (CameraManager)getSystemService(Context.CAMERA_SERVICE);
         try{
@@ -133,10 +135,10 @@ public class main_activity extends AppCompatActivity {
         @Override
         public void onClick(View v) {
             if (light_state==1){
-                light_state=4;
+                light_state=0;
                 lightOff();
             }else {
-                light_state=1;
+                //light_state=1;
                 lightOn();
             }
         }
