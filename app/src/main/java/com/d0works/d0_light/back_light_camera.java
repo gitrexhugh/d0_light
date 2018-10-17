@@ -1,4 +1,4 @@
-package com.example.rex_h.d0_light;
+package com.d0works.d0_light;
 
 import android.Manifest;
 import android.app.AlertDialog;
@@ -25,7 +25,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.content.Context;
 import android.os.Bundle;
-import android.util.Log;
+//import android.util.Log;
 import android.util.Size;
 import android.util.SparseIntArray;
 import android.view.KeyEvent;
@@ -143,7 +143,7 @@ public class back_light_camera extends AppCompatActivity {
     private final CameraDevice.StateCallback stateCallback = new CameraDevice.StateCallback() {
         @Override
         public void onOpened(@NonNull CameraDevice camera) {
-            Log.e(TAG, "onOpened");
+            //Log.e(TAG, "onOpened");
             mCameraDevice = camera;
             createCameraPreview();
 
@@ -186,7 +186,7 @@ public class back_light_camera extends AppCompatActivity {
         String file_time=timeStamp.format(cur);
         file_time=file_time+".jpg";
         if (null == mCameraDevice) {
-            Log.e(TAG, "Camera Device is Null");
+            //Log.e(TAG, "Camera Device is Null");
             return;
         }
 
@@ -321,7 +321,7 @@ public class back_light_camera extends AppCompatActivity {
 
     private void openCamera() {
 
-        Log.e(TAG, "is camera open");
+        //Log.e(TAG, "is camera open");
         try {
             final String mCameraId=mCameraManager.getCameraIdList()[0];
             CameraCharacteristics characteristics = mCameraManager.getCameraCharacteristics(mCameraId);
@@ -331,20 +331,20 @@ public class back_light_camera extends AppCompatActivity {
             // Add permission for camera and let user grant the permission
             if (ActivityCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
                 ActivityCompat.requestPermissions(back_light_camera.this, new String[]{Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE}, REQUEST_CAMERA_PERMISSION);
-                return;
-            }
+            }else{
+                mCameraManager.openCamera(mCameraId, stateCallback, new Handler());
 
-            mCameraManager.openCamera(mCameraId, stateCallback, new Handler());
+            }
 
         } catch (CameraAccessException e) {
             e.printStackTrace();
         }
-        Log.e(TAG, "openCamera X");
+        //Log.e(TAG, "openCamera X");
     }
 
     protected void updatePreview(CaptureRequest.Builder captureBuilder) {
         if (null == mCameraDevice) {
-            Log.e(TAG, "updatePreview error, return");
+            //Log.e(TAG, "updatePreview error, return");
         }
         captureBuilder.set(CaptureRequest.CONTROL_MODE, CameraMetadata.CONTROL_MODE_AUTO);
         //captureRequestBuilder.set(CaptureRequest.CONTROL_MODE, CameraMetadata.CONTROL_MODE_AUTO);
@@ -381,7 +381,7 @@ public class back_light_camera extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        Log.e(TAG, "onResume");
+        //Log.e(TAG, "onResume");
         startBackgroundThread();
         if (mTextureView.isAvailable()) {
             //openCamera();
@@ -392,7 +392,7 @@ public class back_light_camera extends AppCompatActivity {
 
     @Override
     protected void onPause() {
-        Log.e(TAG, "onPause");
+       // Log.e(TAG, "onPause");
         closeCamera();
         stopBackgroundThread();
         super.onPause();

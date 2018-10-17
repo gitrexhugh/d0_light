@@ -1,4 +1,4 @@
-package com.example.rex_h.d0_light;
+package com.d0works.d0_light;
 
 import android.Manifest;
 import android.app.Activity;
@@ -28,7 +28,7 @@ import android.os.HandlerThread;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
+//import android.util.Log;
 import android.util.Size;
 import android.util.SparseIntArray;
 import android.view.KeyEvent;
@@ -156,7 +156,7 @@ public class screen_light_camera extends AppCompatActivity {
     private final CameraDevice.StateCallback stateCallback = new CameraDevice.StateCallback() {
         @Override
         public void onOpened(@NonNull CameraDevice camera) {
-            Log.e(TAG, "onOpened");
+            //Log.e(TAG, "onOpened");
             mCameraDevice = camera;
             createCameraPreview();
 
@@ -198,7 +198,7 @@ public class screen_light_camera extends AppCompatActivity {
         file_time=file_time+".jpg";
 
         if (null == mCameraDevice) {
-            Log.e(TAG, "Camera Device is Null");
+           // Log.e(TAG, "Camera Device is Null");
             return;
         }
 
@@ -328,7 +328,7 @@ public class screen_light_camera extends AppCompatActivity {
     private void openCamera() {
         CameraManager manager = (CameraManager) getSystemService(Context.CAMERA_SERVICE);
 
-        Log.e(TAG, "is camera open");
+       // Log.e(TAG, "is camera open");
         try {
             mCameraId = manager.getCameraIdList()[1];
             CameraCharacteristics characteristics = manager.getCameraCharacteristics(mCameraId);
@@ -352,12 +352,12 @@ public class screen_light_camera extends AppCompatActivity {
         } catch (CameraAccessException e) {
             e.printStackTrace();
         }
-        Log.e(TAG, "openCamera X");
+       // Log.e(TAG, "openCamera X");
     }
 
     protected void updatePreview() {
         if (null == mCameraDevice) {
-            Log.e(TAG, "updatePreview error, return");
+           // Log.e(TAG, "updatePreview error, return");
         }
         captureRequestBuilder.set(CaptureRequest.CONTROL_MODE, CameraMetadata.CONTROL_MODE_AUTO);
         try {
@@ -392,7 +392,7 @@ public class screen_light_camera extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        Log.e(TAG, "onResume");
+       // Log.e(TAG, "onResume");
         startBackgroundThread();
         if (mTextureView.isAvailable()) {
             //openCamera();
@@ -403,7 +403,7 @@ public class screen_light_camera extends AppCompatActivity {
 
     @Override
     protected void onPause() {
-        Log.e(TAG, "onPause");
+       // Log.e(TAG, "onPause");
         closeCamera();
         stopBackgroundThread();
         super.onPause();

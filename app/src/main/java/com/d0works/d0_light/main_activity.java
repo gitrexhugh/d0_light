@@ -1,4 +1,4 @@
-package com.example.rex_h.d0_light;
+package com.d0works.d0_light;
 
 import android.app.AlertDialog;
 import android.content.Context;
@@ -12,7 +12,6 @@ import android.view.WindowManager;
 import android.widget.ImageView;
 import android.support.v7.app.AppCompatActivity;
 import android.content.Intent;
-import android.widget.Toast;
 
 public class main_activity extends AppCompatActivity {
     private int function;// 1: back_light; 2: back_light_camera; 3: screen_light_camera; 4: screen_light

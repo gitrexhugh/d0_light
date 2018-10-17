@@ -1,13 +1,11 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.rex_h.d0_light">
-    <uses-feature android:name="android.hardware.camera2.full"/>
+    xmlns:tools="http://schemas.android.com/tools"
+    package="com.d0works.d0_light"
+    android:versionCode="9"
+    android:versionName="1.7.9">
     <uses-permission android:name="android.permission.CAMERA"/>
-    <uses-permission android:name="android.permission.FLASHLIGHT"/>
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.CHANGE_CONFIGURATION"/>
-    <uses-permission android:name="android.permission.WRITE_SETTINGS"/>
-    <uses-permission android:name="android.hardware.camera.level.full"/>
-    <uses-feature android:name="android.hardware.camera.flash" />
+
 
     <application
         android:allowBackup="true"
@@ -15,17 +13,18 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme">
-        <activity android:name=".main_activity"
+        android:theme="@style/AppTheme"
+        >
+        <activity android:name="com.d0works.d0_light.main_activity"
             android:screenOrientation="portrait" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".screen_light" android:label="screen_light" android:screenOrientation="portrait" />
-        <activity android:name=".back_light_camera" android:label="back_light_camera" android:screenOrientation="portrait" />
-        <activity android:name=".screen_light_camera" android:label="back_light_camera" android:screenOrientation="portrait" />
+        <activity android:name="com.d0works.d0_light.screen_light" android:label="screen_light" android:screenOrientation="portrait" />
+        <activity android:name="com.d0works.d0_light.back_light_camera" android:label="back_light_camera" android:screenOrientation="portrait" />
+        <activity android:name="com.d0works.d0_light.screen_light_camera" android:label="back_light_camera" android:screenOrientation="portrait" />
 
     </application>
 </manifest>

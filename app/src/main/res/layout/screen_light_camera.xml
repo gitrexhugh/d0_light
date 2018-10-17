@@ -64,9 +64,9 @@
         android:visibility="visible"
         android:layout_width="180sp"
         android:layout_height="240sp"
-        android:layout_centerInParent="false"
-           android:layout_alignParentBottom="true"
-           android:layout_marginBottom="100sp"/>
+        android:layout_centerInParent="true"
+           android:layout_alignParentTop="true"
+           android:layout_marginTop="100sp"/>
 
     <ImageView
         android:id="@+id/ibtn_shoot"

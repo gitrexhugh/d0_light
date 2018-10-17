@@ -1,4 +1,4 @@
-package com.example.rex_h.d0_light;
+package com.d0works.d0_light;
 
 import org.junit.Test;
 
