@@ -6,8 +6,8 @@ android {
         applicationId "com.d0works.d0_light"
         minSdkVersion 23
         targetSdkVersion 28
-        versionCode 9
-        versionName "1.7.9"
+        versionCode 11
+        versionName "1.7.11"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {

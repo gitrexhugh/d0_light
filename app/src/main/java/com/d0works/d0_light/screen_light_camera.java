@@ -385,6 +385,8 @@ public class screen_light_camera extends AppCompatActivity {
                 // close the app
                 Toast.makeText(screen_light_camera.this, "Sorry!!!, you can't use this app without granting permission", Toast.LENGTH_LONG).show();
                 finish();
+            }else{
+                openCamera();
             }
         }
     }

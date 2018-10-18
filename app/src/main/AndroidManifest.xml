@@ -1,8 +1,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     package="com.d0works.d0_light"
-    android:versionCode="9"
-    android:versionName="1.7.9">
+    android:versionCode="11"
+    android:versionName="1.7.11">
     <uses-permission android:name="android.permission.CAMERA"/>
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 

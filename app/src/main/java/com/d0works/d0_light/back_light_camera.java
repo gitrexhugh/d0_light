@@ -374,6 +374,8 @@ public class back_light_camera extends AppCompatActivity {
                 // close the app
                 Toast.makeText(back_light_camera.this, "Sorry!!!, you can't use this app without granting permission", Toast.LENGTH_LONG).show();
                 finish();
+            }else{
+                openCamera();
             }
         }
     }
@@ -384,7 +386,7 @@ public class back_light_camera extends AppCompatActivity {
         //Log.e(TAG, "onResume");
         startBackgroundThread();
         if (mTextureView.isAvailable()) {
-            //openCamera();
+            openCamera();
         } else {
             mTextureView.setSurfaceTextureListener(textureListener);
         }
